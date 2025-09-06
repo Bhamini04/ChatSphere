@@ -1,0 +1,330 @@
+/* ========================================
+   VARIABLES
+======================================== */
+:root {
+  --bg: #0f1220;
+  --bg-2: #151a2f;
+  --card: #1d2240;
+  --accent: #6c63ff;
+  --accent-2: #4f46e5;
+  --muted: #8b92b7;
+  --text: #e9ecff;
+  --text-dim: #c7c9e4;
+  --success: #10b981;
+}
+
+/* ========================================
+   CHAT WINDOW LAYOUT
+======================================== */
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Header */
+.pane-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-2);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  cursor: pointer;
+}
+
+.peer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.peer-name-container .name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.peer-name-container .presence {
+  font-size: 0.75rem;
+  color: var(--success);
+}
+
+/* ========================================
+   CHAT MESSAGES
+======================================== */
+.thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  background: radial-gradient(1100px 500px at 80% -10%, #1c2145 0%, var(--bg) 60%);
+}
+
+.row {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.row.me {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  word-wrap: break-word;
+}
+
+.bubble.me {
+  background: linear-gradient(90deg, #5f57ff 0%, #734ae8 100%);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+}
+
+.bubble.them {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid #2a2f56;
+  border-bottom-left-radius: 6px;
+}
+
+.bubble .time {
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 2px;
+}
+
+.media-preview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 12px;
+}
+
+/* ========================================
+   COMPOSER / INPUT
+======================================== */
+.composer, .chat-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg-2);
+}
+
+.composer input, .chat-input input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #2a2f56;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Buttons */
+.btn-circle, .btn-send, .btn-plus {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.btn-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 1.2rem;
+}
+
+.btn-circle:hover {
+  background: var(--accent-2);
+}
+
+.btn-send {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: white;
+  border-radius: 20px;
+  border: none;
+}
+
+.btn-send.btn-recording {
+  background: #ef4444;
+}
+
+.btn-plus {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #4b4f6b;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.btn-plus:hover {
+  background: var(--accent);
+}
+
+/* ========================================
+   MEDIA PANEL
+======================================== */
+.media-options {
+  position: absolute;
+  bottom: 70px;
+  left: 16px;
+  background: var(--bg-2);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+}
+
+.media-options input {
+  display: none;
+}
+
+.media-option {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.media-option:hover {
+  background: #2a2f56;
+}
+
+/* ========================================
+   SETTINGS MODAL
+======================================== */
+.settings-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.settings-modal {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  color: var(--text);
+}
+
+.btn-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.profile-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid var(--accent);
+  margin-bottom: 16px;
+}
+
+.username-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid #2a2f56;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+}
+
+.btn-save, .btn-logout {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.btn-save {
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
+}
+
+.btn-logout {
+  background: #f44336;
+  color: #fff;
+}
+
+.btn-save:hover, .btn-logout:hover {
+  opacity: 0.9;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media screen and (max-width: 768px) {
+  .chat-window {
+    font-size: 0.9rem;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+  }
+
+  .composer input, .chat-input input {
+    padding: 8px 12px;
+  }
+
+  .btn-circle, .btn-plus {
+    width: 36px;
+    height: 36px;
+  }
+}
