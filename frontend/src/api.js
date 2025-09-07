@@ -1,16 +1,16 @@
 // src/api.js
 import axios from "axios";
 
-// Use environment variable for base URL (Vite requires VITE_ prefix)
+// Use environment variable for backend URL (Vite requires VITE_ prefix)
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-// Axios instance
+// Create Axios instance
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // allow cookies if needed
 });
 
-// Automatically add token if available
+// Automatically add JWT token if available
 api.interceptors.request.use((config) => {
   const authData = localStorage.getItem("authData");
   if (authData) {
