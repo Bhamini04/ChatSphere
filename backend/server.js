@@ -17,14 +17,14 @@ import connectDB from "./src/config/db.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Ensure uploads folder exists
+// -------------------- Ensure uploads folder exists --------------------
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-// ---------- CORS Configuration ----------
+// -------------------- CORS Configuration --------------------
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  process.env.CLIENT_URL // deployed frontend
+  "http://localhost:5173",            // local frontend
+  process.env.CLIENT_URL              // deployed frontend
 ];
 
 app.use(
@@ -40,7 +40,13 @@ app.use(
   })
 );
 
-// Middleware
+// Handle preflight OPTIONS requests
+app.options("*", cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
+// -------------------- Middleware --------------------
 app.use(
   express.json({
     limit: "20mb",
@@ -50,18 +56,18 @@ app.use(
 // Serve uploaded files
 app.use("/uploads", express.static(uploadsDir));
 
-// ---------- API Routes ----------
+// -------------------- API Routes --------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/media", mediaRoutes);
 
-// Root route to test backend deployment
+// -------------------- Root route --------------------
 app.get("/", (req, res) => {
   res.send("ChatSphere Backend is running 🚀");
 });
 
-// ---------- Connect Database and start server ----------
+// -------------------- Connect Database and Start Server --------------------
 (async () => {
   try {
     await connectDB();
@@ -96,7 +102,6 @@ app.get("/", (req, res) => {
   // Start the HTTP server
   httpServer.listen(PORT, () => {
     console.log(`🚀 Backend running on http://localhost:${PORT}`);
-    console.log(`🌐 Allowed frontend URL: ${process.env.CLIENT_URL}`);
+    console.log(`🌐 Allowed frontend URL(s): ${allowedOrigins.join(", ")}`);
   });
 })();
-
