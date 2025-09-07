@@ -1,8 +1,8 @@
 // src/api.js
 import axios from "axios";
 
-// Base URL for backend
-const BASE_URL = "http://localhost:5000/api";
+// Use environment variable for base URL (Vite requires VITE_ prefix)
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 // Axios instance
 const api = axios.create({
@@ -10,7 +10,7 @@ const api = axios.create({
   withCredentials: true, // allow cookies if needed
 });
 
-// Add token automatically if available
+// Automatically add token if available
 api.interceptors.request.use((config) => {
   const authData = localStorage.getItem("authData");
   if (authData) {
@@ -55,5 +55,3 @@ export const sendMessage = async (chatId, senderId, text) => {
   const response = await api.post("/messages", { chatId, senderId, text });
   return response.data;
 };
-
-
