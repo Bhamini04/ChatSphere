@@ -35,7 +35,7 @@ app.use(
 );
 
 // Serve uploaded files
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static(uploadsDir));
 
 // API Routes
 app.use("/api/auth", authRoutes);
@@ -43,7 +43,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/media", mediaRoutes);
 
-// Connect Database
+// Root route to test backend deployment
+app.get("/", (req, res) => {
+  res.send("ChatSphere Backend is running 🚀");
+});
+
+// Connect Database and start server
 (async () => {
   try {
     await connectDB();
@@ -72,5 +77,6 @@ app.use("/api/media", mediaRoutes);
   // Start the HTTP server
   httpServer.listen(PORT, () => {
     console.log(`🚀 Backend running on http://localhost:${PORT}`);
+    console.log(`🌐 Live URL: ${process.env.CLIENT_URL || "Your Render URL"}`);
   });
 })();
