@@ -3,7 +3,6 @@ dotenv.config();
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import cors from "cors";
 import path from "path";
 import fs from "fs";
 
@@ -17,41 +16,37 @@ import connectDB from "./src/config/db.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// -------------------- ROBUST CORS --------------------
+// Must be before all routes and other middleware
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://localhost:5173",              // local frontend
+    process.env.CLIENT_URL || ""          // deployed frontend
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
+
+  // Handle preflight OPTIONS request
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+// -------------------- END CORS --------------------
+
+// -------------------- JSON Middleware --------------------
+app.use(express.json({ limit: "20mb" }));
+
 // -------------------- Ensure uploads folder exists --------------------
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-// -------------------- CORS Configuration --------------------
-const allowedOrigins = [
-  "http://localhost:5173",            // local frontend
-  process.env.CLIENT_URL              // deployed frontend
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS policy: This origin is not allowed"));
-      }
-    },
-    credentials: true,
-  })
-);
-
-// Handle preflight OPTIONS requests
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
-
-// -------------------- Middleware --------------------
-app.use(
-  express.json({
-    limit: "20mb",
-  })
-);
 
 // Serve uploaded files
 app.use("/uploads", express.static(uploadsDir));
@@ -62,12 +57,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/media", mediaRoutes);
 
-// -------------------- Root route --------------------
+// Root route to check backend deployment
 app.get("/", (req, res) => {
   res.send("ChatSphere Backend is running 🚀");
 });
 
-// -------------------- Connect Database and Start Server --------------------
+// -------------------- Database and Socket.IO --------------------
 (async () => {
   try {
     await connectDB();
@@ -80,10 +75,14 @@ app.get("/", (req, res) => {
   // Create HTTP server from Express app
   const httpServer = http.createServer(app);
 
-  // Create Socket.IO server attached to HTTP server
+  // Socket.IO setup with the same robust CORS
   const io = new Server(httpServer, {
     cors: {
       origin: function (origin, callback) {
+        const allowedOrigins = [
+          "http://localhost:5173",
+          process.env.CLIENT_URL || ""
+        ];
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
@@ -96,12 +95,13 @@ app.get("/", (req, res) => {
     transports: ["websocket", "polling"],
   });
 
-  // Initialize Socket.IO event handlers
+  // Initialize Socket.IO events
   initSockets(io);
 
-  // Start the HTTP server
+  // Start server
   httpServer.listen(PORT, () => {
     console.log(`🚀 Backend running on http://localhost:${PORT}`);
-    console.log(`🌐 Allowed frontend URL(s): ${allowedOrigins.join(", ")}`);
+    console.log(`🌐 Allowed frontend URL(s): ${process.env.CLIENT_URL}`);
   });
 })();
+
