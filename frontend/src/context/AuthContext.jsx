@@ -14,24 +14,26 @@ export const AuthProvider = ({ children }) => {
     if (savedUser) setUser(savedUser);
   }, []);
 
-  const login = ({ username, avatar }) => {
-    const userData = { username, avatar: avatar || "/default-avatar.png" };
+  // ✅ Login → save full user object from backend response
+  const login = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  const register = ({ username, avatar }) => {
-    const userData = { username, avatar: avatar || "/default-avatar.png" };
+  // ✅ Register → same as login
+  const register = (userData) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
+  // ✅ Logout → clear user
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
     window.location.href = "/"; // redirect to login
   };
 
+  // ✅ Update profile → update fields but keep _id
   const updateProfile = ({ username, avatar }) => {
     setUser((prev) => ({
       ...prev,
@@ -41,6 +43,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem(
       "user",
       JSON.stringify({
+        ...user,
         username: username || user.username,
         avatar: avatar || user.avatar,
       })
@@ -53,4 +56,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
 
